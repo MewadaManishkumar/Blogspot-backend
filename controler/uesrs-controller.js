@@ -1,42 +1,56 @@
-const Admin = require('../models/admin');
+const enumRole = require('../models/enumRole');
+const Users = require('../models/users');
 
-const getAdmin= async (req, res) => {
-    const admins = await Admin.find();
-    res.send(admins);
+const getUsers = async (req, res) => {
+    try{
+        const users = await Users.find({role: enumRole.user});
+        res.send(users);
+    } catch(err){
+        res.status(400).send({ error: err.message });
+    }
+    
 }
 
-const createAdmin = async (req, res) => {
-    const admin = new Admin(req.body)
+const createUsers = async (req, res) => {
+    const userData = req.body;
+    const fieldsToSave = {
+        name: userData.name,
+        email: userData.email,
+        username: userData.username,
+        password: userData.password,
+        role: enumRole.user
+    }
+    const users = new Users(fieldsToSave)
     try {
-        await admin.save();
-        res.send(admin);
+        await users.save();
+        res.send(users);
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
 }
 
-const updateAdmin = async (req, res) => {
+const updateUsers = async (req, res) => {
     try {
-        const admin = await Admin.findByIdAndUpdate(req.params._id,{$set: req.body});
-        if (!admin) {
-            return res.status(404).send({ error: 'Admin not found' });
+        const users = await Users.findByIdAndUpdate(req.params._id,{$set: req.body});
+        if (!users) {
+            return res.status(404).send({ error: 'User not found' });
         }
-        res.send(admin);
+        res.send(users);
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
 }
 
-const deleteAdmin = async (req, res) => {
+const deleteUsers = async (req, res) => {
     try {
-        const admin = await Admin.findByIdAndDelete(req.params._id);
-        if (!admin) {
-            return res.status(404).send({ error: 'Admin not found' });
+        const users = await Users.findByIdAndDelete(req.params._id);
+        if (!users) {
+            return res.status(404).send({ error: 'User not found' });
         }
-        res.send({ message: 'Admin deleted' });
+        res.send({ message: 'User deleted' });
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
 }
 
-module.exports = {getAdmin,createAdmin,updateAdmin,deleteAdmin};
+module.exports = {getUsers,createUsers,updateUsers,deleteUsers};

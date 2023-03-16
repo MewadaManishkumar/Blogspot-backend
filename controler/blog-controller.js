@@ -1,14 +1,26 @@
-const Blog = require('../models/blog')
-const Author = require('../models/author')
+const Users = require('../models/users')
 const Category = require('../models/category')
+const Blog = require('../models/blog')
 
 const getBlog = async (req, res) => {
-    const blogs = await Blog.find().populate('author_id').populate('category_id');
+    const blogs = await Blog.find().populate("user_id").populate("category_id");
     res.send(blogs);
+}
+const getSelectBlog = async(req,res) =>{
+    const selectedBlog = await Blog.findById(req.params._id);
+    res.send(selectedBlog)
 }
 
 const createBlog = async (req, res) => {
-    const blog = new Blog(req.body);
+    const blogData = req.body;
+    console.log(req.body);
+    const fieldsToSave = {
+        title: blogData.title,
+        content: blogData.content,
+        user_id: blogData.user,
+        category_id: blogData.category
+    }
+    const blog = new Blog(fieldsToSave);
     try {
         await blog.save();
         res.send(blog);
@@ -18,8 +30,15 @@ const createBlog = async (req, res) => {
 }
 
 const updateBlog = async (req, res) => {
+    const updateBlogdata = req.body;
+    const fieldsToSave = {
+        title: updateBlogdata.title,
+        content: updateBlogdata.content,
+        user_id: updateBlogdata.user,
+        category_id: updateBlogdata.category
+    }
     try {
-        const blog = await Blog.findByIdAndUpdate(req.params._id, {$set: req.body});
+        const blog = await Blog.findByIdAndUpdate(req.params._id, {$set: fieldsToSave});
         if (!blog) {
             return res.status(404).send({ error: 'Blog not found' });
         }
@@ -41,4 +60,4 @@ const deleteBlog = async (req, res) => {
     }
 }
 
-module.exports = {getBlog,createBlog,updateBlog,deleteBlog}
+module.exports = {getBlog,getSelectBlog,createBlog,updateBlog,deleteBlog}
