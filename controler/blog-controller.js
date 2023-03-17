@@ -3,17 +3,24 @@ const Category = require('../models/category')
 const Blog = require('../models/blog')
 
 const getBlog = async (req, res) => {
-    const blogs = await Blog.find().populate("user_id").populate("category_id");
-    res.send(blogs);
+    try {
+        const blogs = await Blog.find().populate("user_id").populate("category_id");
+        res.send(blogs);
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
 }
-const getSelectBlog = async(req,res) =>{
-    const selectedBlog = await Blog.findById(req.params._id);
-    res.send(selectedBlog)
+const getSelectBlog = async (req, res) => {
+    try {
+        const selectedBlog = await Blog.findById(req.params._id);
+        res.send(selectedBlog)
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
 }
 
 const createBlog = async (req, res) => {
     const blogData = req.body;
-    console.log(req.body);
     const fieldsToSave = {
         title: blogData.title,
         content: blogData.content,
@@ -38,7 +45,7 @@ const updateBlog = async (req, res) => {
         category_id: updateBlogdata.category
     }
     try {
-        const blog = await Blog.findByIdAndUpdate(req.params._id, {$set: fieldsToSave});
+        const blog = await Blog.findByIdAndUpdate(req.params._id, { $set: fieldsToSave });
         if (!blog) {
             return res.status(404).send({ error: 'Blog not found' });
         }
@@ -60,4 +67,4 @@ const deleteBlog = async (req, res) => {
     }
 }
 
-module.exports = {getBlog,getSelectBlog,createBlog,updateBlog,deleteBlog}
+module.exports = { getBlog, getSelectBlog, createBlog, updateBlog, deleteBlog }

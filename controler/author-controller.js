@@ -2,11 +2,24 @@ const Users = require('../models/users')
 const enumRole = require('../models/enumRole');
 
 const getAuthor = async (req, res) => {
-    const authors = await Users.find({role: enumRole.author});
-    res.send(authors);
+    try {
+        const authors = await Users.find({ role: enumRole.author });
+        res.send(authors);
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
 }
 
-const createAuthor = async (req, res) => {  
+const getSelectAuthor = async (req, res) => {
+    try {
+        const selectedAuthor = await Users.findById(req.params._id);
+        res.send(selectedAuthor);
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
+}
+
+const createAuthor = async (req, res) => {
     const authorData = req.body;
     const fieldsToSave = {
         name: authorData.name,
@@ -25,8 +38,16 @@ const createAuthor = async (req, res) => {
 }
 
 const updateAuthor = async (req, res) => {
+    const updateAuthorData = req.body;
+    const fieldsToSave = {
+        name: updateAuthorData.name,
+        email: updateAuthorData.email,
+        username: updateAuthorData.username,
+        password: updateAuthorData.password,
+        role: enumRole.author
+    }
     try {
-        const author = await Users.findByIdAndUpdate(req.params._id,{$set: req.body});
+        const author = await Users.findByIdAndUpdate(req.params._id, { $set: fieldsToSave });
         if (!author) {
             return res.status(404).send({ error: 'Author not found' });
         }
@@ -48,4 +69,4 @@ const deleteAuthor = async (req, res) => {
     }
 }
 
-module.exports = {getAuthor,createAuthor,updateAuthor,deleteAuthor};
+module.exports = { getAuthor, getSelectAuthor, createAuthor, updateAuthor, deleteAuthor };

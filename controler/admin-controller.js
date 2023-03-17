@@ -2,8 +2,21 @@ const Users = require('../models/users')
 const enumRole = require('../models/enumRole');
 
 const getAdmin = async (req, res) => {
-    const admins = await Users.find({ $or: [{ role: enumRole.admin }, { role: enumRole.masterAdmin }] }    );
-    res.send(admins);
+    try {
+        const admins = await Users.find({ $or: [{ role: enumRole.admin }, { role: enumRole.masterAdmin }] });
+        res.send(admins);
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
+}
+
+const getSelectAdmin = async (req, res) => {
+    try {
+        const selectedAdmin = await Users.findById(req.params._id);
+        res.send(selectedAdmin);
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
 }
 
 const createAdmin = async (req, res) => {
@@ -48,5 +61,5 @@ const deleteAdmin = async (req, res) => {
     }
 }
 
-module.exports = { getAdmin, createAdmin, updateAdmin, deleteAdmin };
+module.exports = { getAdmin, getSelectAdmin, createAdmin, updateAdmin, deleteAdmin };
 // { $and: [{ role: enumRole.admin }, { role: enumRole.masterAdmin }] }

@@ -1,12 +1,29 @@
 const Category = require('../models/category');
 
 const getCategory = async (req, res) => {
-    const categories = await Category.find();
-    res.send(categories);
+    try {
+        const categories = await Category.find();
+        res.send(categories);
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
+}
+
+const getSelectCategory = async (req, res) => {
+    try {
+        const selectedCategory = await Category.findById(req.params._id);
+        res.send(selectedCategory);
+    } catch (err) {
+        res.status(400).send({ error: err.message });
+    }
 }
 
 const createCategory = async (req, res) => {
-    const category = new Category(req.body);
+    const categoryData = req.body;
+    const fielsToSave = {
+        name: categoryData.category
+    }
+    const category = new Category(fielsToSave);
     try {
         await category.save();
         res.send(category);
@@ -16,8 +33,12 @@ const createCategory = async (req, res) => {
 }
 
 const updateCategory = async (req, res) => {
+    const updateCategoryData = req.body;
+    const fielsToSave = {
+        name: updateCategoryData.category
+    }
     try {
-        const category = await Category.findByIdAndUpdate(req.params._id, {$set: req.body});
+        const category = await Category.findByIdAndUpdate(req.params._id, { $set: fielsToSave });
         if (!category) {
             return res.status(404).send({ error: 'Category not found' });
         }
@@ -39,4 +60,4 @@ const deleteCategory = async (req, res) => {
     }
 }
 
-module.exports = {getCategory, createCategory, updateCategory, deleteCategory}
+module.exports = { getCategory, getSelectCategory, createCategory, updateCategory, deleteCategory }
