@@ -22,7 +22,7 @@ const getSelectAuthor = async (req, res) => {
 const createAuthor = async (req, res) => {
     const authorData = req.body;
     const fieldsToSave = {
-        name: authorData.name,
+        name: authorData.authorname,
         email: authorData.email,
         username: authorData.username,
         password: authorData.password,
@@ -40,7 +40,7 @@ const createAuthor = async (req, res) => {
 const updateAuthor = async (req, res) => {
     const updateAuthorData = req.body;
     const fieldsToSave = {
-        name: updateAuthorData.name,
+        name: updateAuthorData.authorname,
         email: updateAuthorData.email,
         username: updateAuthorData.username,
         password: updateAuthorData.password,
