@@ -22,7 +22,7 @@ const getSelectAdmin = async (req, res) => {
 const createAdmin = async (req, res) => {
     const adminData = req.body;
     const fieldsToSave = {
-        name: adminData.name,
+        name: adminData.adminname,
         email: adminData.email,
         username: adminData.username,
         password: adminData.password,
@@ -38,8 +38,16 @@ const createAdmin = async (req, res) => {
 }
 
 const updateAdmin = async (req, res) => {
+    const updateAdminData = req.body;
+    const fieldsToSave = {
+        name: updateAdminData.adminname,
+        email: updateAdminData.email,
+        username: updateAdminData.username,
+        password: updateAdminData.password,
+        role: updateAdminData.role
+    }
     try {
-        const admin = await Users.findByIdAndUpdate(req.params._id, { $set: req.body });
+        const admin = await Users.findByIdAndUpdate(req.params._id, { $set: fieldsToSave });
         if (!admin) {
             return res.status(404).send({ error: 'Admin not found' });
         }
@@ -62,4 +70,3 @@ const deleteAdmin = async (req, res) => {
 }
 
 module.exports = { getAdmin, getSelectAdmin, createAdmin, updateAdmin, deleteAdmin };
-// { $and: [{ role: enumRole.admin }, { role: enumRole.masterAdmin }] }

@@ -22,7 +22,7 @@ const getSelectUser = async (req, res) => {
 const createUsers = async (req, res) => {
     const userData = req.body;
     const fieldsToSave = {
-        name: userData.name,
+        name: userData.enduser,
         email: userData.email,
         username: userData.username,
         password: userData.password,
@@ -40,7 +40,7 @@ const createUsers = async (req, res) => {
 const updateUsers = async (req, res) => {
     const updateUsersData = req.body;
     const fieldsToSave = {
-        name: updateUsersData.name,
+        name: updateUsersData.enduser,
         email: updateUsersData.email,
         username: updateUsersData.username,
         password: updateUsersData.password,
