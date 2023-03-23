@@ -1,5 +1,6 @@
 const Users = require('../models/users')
 const enumRole = require('../models/enumRole');
+const bcrypt = require('bcrypt');
 
 const getAuthor = async (req, res) => {
     try {
@@ -25,7 +26,7 @@ const createAuthor = async (req, res) => {
         name: authorData.authorname,
         email: authorData.email,
         username: authorData.username,
-        password: authorData.password,
+        password: await bcrypt.hash(authorData.password,10),
         role: enumRole.author
     }
     const author = new Users(fieldsToSave);
@@ -43,7 +44,7 @@ const updateAuthor = async (req, res) => {
         name: updateAuthorData.authorname,
         email: updateAuthorData.email,
         username: updateAuthorData.username,
-        password: updateAuthorData.password,
+        password: await bcrypt.hash(updateAuthorData.password,10),
         role: enumRole.author
     }
     try {

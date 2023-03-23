@@ -6,7 +6,7 @@ const {getAdmin,getSelectAdmin,createAdmin,updateAdmin,deleteAdmin} = require(".
 const {getAuthor,getSelectAuthor,createAuthor,updateAuthor,deleteAuthor} = require("../controler/author-controller")
 const {getBlog,createBlog,updateBlog,deleteBlog,getSelectBlog} = require('../controler/blog-controller')
 const {getCategory, getSelectCategory,createCategory, updateCategory, deleteCategory} = require('../controler/category-controller')
-const signupUser = require('../controler/singup-controller');
+const loginUser = require('../controler/login-controller');
 
 //use router from express module
 const router = express.Router();
@@ -46,7 +46,7 @@ router.post("/blogs/create", createBlog);
 router.put("/blogs/update/:_id", updateBlog);
 router.delete("/blogs/delete/:_id", deleteBlog);
 
-//Singup API
-router.post("/signup",signupUser);
+//Login API
+router.post("/login",loginUser);
 
 module.exports= router;
