@@ -23,7 +23,7 @@ const getSelectUser = async (req, res) => {
 const createUsers = async (req, res) => {
     const userData = req.body;
     const fieldsToSave = {
-        name: userData.enduser,
+        name: userData.name,
         email: userData.email,
         username: userData.username,
         password: await bcrypt.hash(userData.password,10),
@@ -41,10 +41,9 @@ const createUsers = async (req, res) => {
 const updateUsers = async (req, res) => {
     const updateUsersData = req.body;
     const fieldsToSave = {
-        name: updateUsersData.enduser,
+        name: updateUsersData.name,
         email: updateUsersData.email,
         username: updateUsersData.username,
-        password: await bcrypt.hash(updateUsersData.password,10),
         role: enumRole.user
     }
     try {

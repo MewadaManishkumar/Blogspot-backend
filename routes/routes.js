@@ -6,7 +6,8 @@ const {getAdmin,getSelectAdmin,createAdmin,updateAdmin,deleteAdmin} = require(".
 const {getAuthor,getSelectAuthor,createAuthor,updateAuthor,deleteAuthor} = require("../controler/author-controller")
 const {getBlog,createBlog,updateBlog,deleteBlog,getSelectBlog} = require('../controler/blog-controller')
 const {getCategory, getSelectCategory,createCategory, updateCategory, deleteCategory} = require('../controler/category-controller')
-const loginUser = require('../controler/login-controller');
+const {loginUser, logoutUser} = require('../controler/login-controller');
+const { authenticateToken, createNewToken } = require('../controler/jwt-controller');
 
 //use router from express module
 const router = express.Router();
@@ -42,11 +43,14 @@ router.delete("/categories/delete/:_id", deleteCategory);
 //Blog API
 router.get("/blogs/list",getBlog);
 router.get("/blogs/list/:_id",getSelectBlog);
-router.post("/blogs/create", createBlog);
-router.put("/blogs/update/:_id", updateBlog);
-router.delete("/blogs/delete/:_id", deleteBlog);
+router.post("/blogs/create",createBlog);
+router.put("/blogs/update/:_id",updateBlog);
+router.delete("/blogs/delete/:_id",deleteBlog);
 
 //Login API
 router.post("/login",loginUser);
+router.post('/logout', logoutUser);
+
+router.post('/token', createNewToken);
 
 module.exports= router;

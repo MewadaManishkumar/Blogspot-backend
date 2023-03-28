@@ -10,11 +10,11 @@ const blogSchema = new mongoose.Schema({
         ref: 'Users',
         required: true
     },
-    category_id: {
+    category_id: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         required: true
-    },
+    }],
 });
 
 module.exports = mongoose.model("Blog", blogSchema);

@@ -23,7 +23,7 @@ const getSelectAdmin = async (req, res) => {
 const createAdmin = async (req, res) => {
     const adminData = req.body;
     const fieldsToSave = {
-        name: adminData.adminname,
+        name: adminData.name,
         email: adminData.email,
         username: adminData.username,
         password: await bcrypt.hash(adminData.password,10),
@@ -41,10 +41,9 @@ const createAdmin = async (req, res) => {
 const updateAdmin = async (req, res) => {
     const updateAdminData = req.body;
     const fieldsToSave = {
-        name: updateAdminData.adminname,
+        name: updateAdminData.name,
         email: updateAdminData.email,
         username: updateAdminData.username,
-        password: await bcrypt.hash(updateAdminData.password,10),
         role: updateAdminData.role
     }
     try {
