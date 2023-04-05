@@ -15,7 +15,13 @@ const blogSchema = new mongoose.Schema({
         ref: 'Category',
         required: true
     }],
-});
+    avatar: {
+        type: String,
+        required: false
+    },
+},
+    { timestamps: true }
+);
 
 module.exports = mongoose.model("Blog", blogSchema);
 

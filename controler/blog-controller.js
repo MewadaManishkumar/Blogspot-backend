@@ -1,6 +1,9 @@
+const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
 const Users = require('../models/users')
 const Category = require('../models/category')
-const Blog = require('../models/blog')
+const Blog = require('../models/blog');
 
 const getBlog = async (req, res) => {
     try {
@@ -25,7 +28,10 @@ const createBlog = async (req, res) => {
         title: blogData.title,
         content: blogData.content,
         user_id: blogData.user,
-        category_id: blogData.category
+        category_id: blogData.category,
+    }
+    if (req.file?.filename) {
+        fieldsToSave.avatar = req.file.filename;
     }
     const blog = new Blog(fieldsToSave);
     try {
@@ -37,6 +43,13 @@ const createBlog = async (req, res) => {
 }
 
 const updateBlog = async (req, res) => {
+    const selectedBlog = await Blog.findById(req.params._id);
+
+    let deleteFilePath = null;
+    if (req.file && selectedBlog.avatar !== req.file.filename) {
+        deleteFilePath = path.resolve(__dirname, '..', `uploads/avatars/${selectedBlog.avatar}`);
+    }
+
     const updateBlogdata = req.body;
     const fieldsToSave = {
         title: updateBlogdata.title,
@@ -44,7 +57,21 @@ const updateBlog = async (req, res) => {
         user_id: updateBlogdata.user,
         category_id: updateBlogdata.category
     }
+
+    if (req.file) {
+        fieldsToSave.avatar = req.file.filename;
+    }
+
     try {
+        if (deleteFilePath) {
+            fs.unlink(deleteFilePath, (err) => {
+                if (err) throw err;
+                else {
+                    console.log(`previous file was deleted`);
+                }
+            })
+        }
+
         const blog = await Blog.findByIdAndUpdate(req.params._id, { $set: fieldsToSave });
         if (!blog) {
             return res.status(404).send({ error: 'Blog not found' });
@@ -56,7 +83,22 @@ const updateBlog = async (req, res) => {
 }
 
 const deleteBlog = async (req, res) => {
+    const selectedBlog = await Blog.findById(req.params._id);
+
+    let filePath = null;
+    if (selectedBlog.avatar) {
+        filePath = path.resolve(__dirname, '..', `uploads/avatars/${selectedBlog.avatar}`);
+    }
     try {
+        if (filePath) {
+            fs.unlink(filePath, (err) => {
+                if (err) throw err;
+                else {
+                    console.log(`file was deleted`);
+                }
+            })
+        }
+
         const blog = await Blog.findByIdAndDelete(req.params._id);
         if (!blog) {
             return res.status(404).send({ error: 'Blog not found' });

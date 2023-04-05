@@ -8,14 +8,13 @@ dotenv.config();
 
 const loginUser = async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
-    console.log("user",user);
     if (!user) {
         return res.status(400).json({ msg: 'email does not match' });
     }
     try {
         let match = await bcrypt.compare(req.body.password, user.password);
         if (match) {
-            const accessToken = jwt.sign({id: user._id}, process.env.ACCESS_SECRET_KEY, { expiresIn: 60 });
+            const accessToken = jwt.sign({id: user._id}, process.env.ACCESS_SECRET_KEY, { expiresIn: 300 });
             const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_SECRET_KEY);
 
             const newToken = new Token({ token: refreshToken });
