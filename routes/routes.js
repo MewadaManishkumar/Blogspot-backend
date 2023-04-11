@@ -54,7 +54,7 @@ router.get("/blogs/list", getBlog);
 router.get("/blogs/list/:_id", getSelectBlog);
 router.post("/blogs/create",upload.single('avatar'),createBlog);
 router.put("/blogs/update/:_id",upload.single('avatar'), updateBlog);
-router.delete("/blogs/delete/:_id",deleteBlog);
+router.delete("/blogs/delete/:_id/:role",deleteBlog);
 
 //Login API
 router.post("/login", loginUser);

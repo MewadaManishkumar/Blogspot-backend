@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
-const Users = require('../models/users')
+const User = require('../models/users')
 const Category = require('../models/category')
 const Blog = require('../models/blog');
 
@@ -83,13 +83,19 @@ const updateBlog = async (req, res) => {
 }
 
 const deleteBlog = async (req, res) => {
-    const selectedBlog = await Blog.findById(req.params._id);
-
-    let filePath = null;
-    if (selectedBlog.avatar) {
-        filePath = path.resolve(__dirname, '..', `uploads/avatars/${selectedBlog.avatar}`);
-    }
     try {
+        const selectedBlog = await Blog.findById(req.params._id);
+        const userRole = req.params.role;
+        
+        if (userRole === 'author' || userRole === 'user') {
+            return res.status(401).send({ message: "You are not authorized to delete blog" });
+        }
+
+        let filePath = null;
+        if (selectedBlog.avatar) {
+            filePath = path.resolve(__dirname, '..', `uploads/avatars/${selectedBlog.avatar}`);
+        }
+
         if (filePath) {
             fs.unlink(filePath, (err) => {
                 if (err) throw err;
@@ -98,7 +104,6 @@ const deleteBlog = async (req, res) => {
                 }
             })
         }
-
         const blog = await Blog.findByIdAndDelete(req.params._id);
         if (!blog) {
             return res.status(404).send({ error: 'Blog not found' });
