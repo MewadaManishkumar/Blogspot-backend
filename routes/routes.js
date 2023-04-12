@@ -40,7 +40,7 @@ router.get("/authors/list", getAuthor);
 router.get("/authors/list/:_id", getSelectAuthor);
 router.post("/authors/create", createAuthor);
 router.put("/authors/update/:_id", updateAuthor);
-router.delete("/authors/delete/:_id", deleteAuthor);
+router.delete("/authors/delete/:_id/:isDeleted", deleteAuthor);
 
 //Category API
 router.get("/categories/list", getCategory);

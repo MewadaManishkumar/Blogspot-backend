@@ -26,7 +26,7 @@ const createAuthor = async (req, res) => {
         name: authorData.name,
         email: authorData.email,
         username: authorData.username,
-        password: await bcrypt.hash(authorData.password,10),
+        password: await bcrypt.hash(authorData.password, 10),
         role: enumRole.author
     }
     const author = new Users(fieldsToSave);
@@ -59,11 +59,20 @@ const updateAuthor = async (req, res) => {
 
 const deleteAuthor = async (req, res) => {
     try {
-        const author = await Users.findByIdAndDelete(req.params._id);
+        const access = req.params.isDeleted;
+        let updateObj = {}
+        if(access === 'false'){
+            updateObj.isDeleted = true;
+        }
+        else if(access === 'true'){
+            updateObj.isDeleted = false;
+        }
+        const author = await Users.findByIdAndUpdate(req.params._id, updateObj);
+
         if (!author) {
             return res.status(404).send({ error: 'Author not found' });
         }
-        res.send({ message: 'Author deleted' });
+        res.send(author);
     } catch (err) {
         res.status(400).send({ error: err.message });
     }

@@ -10,7 +10,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum : [enumRole.masterAdmin,enumRole.admin,enumRole.author,enumRole.user],
     default: enumRole.user
-  }
+  },
+  isDeleted: {type: Boolean, default: false}
 });
 
 module.exports = mongoose.model("Users", userSchema);

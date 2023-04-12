@@ -1,4 +1,5 @@
 const Category = require('../models/category');
+const Blog = require('../models/blog')
 
 const getCategory = async (req, res) => {
     try {
@@ -50,12 +51,18 @@ const updateCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
     try {
-        const category = await Category.findByIdAndDelete(req.params._id);
-        if (!category) {
-            return res.status(404).send({ error: 'Category not found' });
+        const blogCount = await Blog.countDocuments({ category_id: req.params._id })
+        if (blogCount > 0) {
+            return res.status(400).json({ error: 'Cannot delete category as it is associated with one or more blogs.' });
+        } else {
+            const category = await Category.findByIdAndDelete(req.params._id);
+            if (!category) {
+                return res.status(404).send({ error: 'Category not found' });
+            }
+            res.send({ message: 'Category deleted' });
         }
-        res.send({ message: 'Category deleted' });
-    } catch (err) {
+    }
+    catch (err) {
         res.status(400).send({ error: err.message });
     }
 }
