@@ -16,10 +16,10 @@ const upload = require('../helpers/UploadLimits')
 const { getUsers, getSelectUser, createUsers, updateUsers, deleteUsers } = require("../controler/uesrs-controller")
 const { getAdmin, getSelectAdmin, createAdmin, updateAdmin, deleteAdmin } = require("../controler/admin-controller")
 const { getAuthor, getSelectAuthor, createAuthor, updateAuthor, deleteAuthor } = require("../controler/author-controller")
-const { getBlog, createBlog, updateBlog, deleteBlog, getSelectBlog } = require('../controler/blog-controller')
+const { getBlog, createBlog, updateBlog, deleteBlog, getSelectBlog, getBlogForAuthor } = require('../controler/blog-controller')
 const { getCategory, getSelectCategory, createCategory, updateCategory, deleteCategory } = require('../controler/category-controller')
 const { loginUser, logoutUser } = require('../controler/login-controller');
-const { authenticateToken, createNewToken } = require('../controler/jwt-controller');
+const { createNewToken } = require('../controler/jwt-controller');
 
 //Admin API
 router.get("/admins/list", getAdmin);
@@ -51,6 +51,7 @@ router.delete("/categories/delete/:_id", deleteCategory);
 
 //Blog API
 router.get("/blogs/list", getBlog);
+router.get("/blogs/author/:user_id", getBlogForAuthor);
 router.get("/blogs/list/:_id", getSelectBlog);
 router.post("/blogs/create",upload.single('avatar'),createBlog);
 router.put("/blogs/update/:_id",upload.single('avatar'), updateBlog);

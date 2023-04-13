@@ -14,10 +14,13 @@ const loginUser = async (req, res) => {
     else if (user.isDeleted) {
         return res.status(401).json({ msg: 'You are not authorized for login' })
     }
+    else if(user.role === 'user'){
+        return res.status(403).json({ msg: 'Normal user are not allowd to access the admin panel' })
+    }
     try {
         let match = await bcrypt.compare(req.body.password, user.password);
         if (match) {
-            const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_SECRET_KEY, { expiresIn: 300 });
+            const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_SECRET_KEY, { expiresIn: "5m" });
             const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_SECRET_KEY);
 
             const newToken = new Token({ token: refreshToken });

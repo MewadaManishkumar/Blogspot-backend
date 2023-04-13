@@ -39,7 +39,7 @@ const createNewToken = async (req, res) => {
         if (error) {
             res.status(500).json({ msg: 'invalid refresh token' });
         }
-        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_SECRET_KEY, { expiresIn: 300 });
+        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_SECRET_KEY, { expiresIn: "5m" });
 
         return res.status(200).json({ accessToken: accessToken })
     })

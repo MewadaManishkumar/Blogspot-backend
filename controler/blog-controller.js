@@ -13,9 +13,18 @@ const getBlog = async (req, res) => {
         res.status(400).send({ error: err.message });
     }
 }
+const getBlogForAuthor = async (req, res) => {
+    try {
+        const blogs = await Blog.find({ user_id: req.params.user_id }).populate("user_id").populate("category_id");
+        res.send(blogs);
+    }
+    catch (err) {
+        res.status(400).send({ error: err.message });
+    }
+}
 const getSelectBlog = async (req, res) => {
     try {
-        const selectedBlog = await Blog.findById(req.params._id);
+        const selectedBlog = await Blog.findById(req.params._id).populate("user_id")
         res.send(selectedBlog)
     } catch (err) {
         res.status(400).send({ error: err.message });
@@ -33,6 +42,7 @@ const createBlog = async (req, res) => {
     if (req.file?.filename) {
         fieldsToSave.avatar = req.file.filename;
     }
+
     const blog = new Blog(fieldsToSave);
     try {
         await blog.save();
@@ -43,23 +53,23 @@ const createBlog = async (req, res) => {
 }
 
 const updateBlog = async (req, res) => {
-    const selectedBlog = await Blog.findById(req.params._id);
+    const selectedBlog = await Blog.findById(req.params._id)
 
+    //create deleteFilePath
     let deleteFilePath = null;
-    if (req.file && selectedBlog.avatar !== req.file.filename) {
+    if (req?.file && selectedBlog?.avatar) {
         deleteFilePath = path.resolve(__dirname, '..', `uploads/avatars/${selectedBlog.avatar}`);
     }
 
-    const updateBlogdata = req.body;
+    const updateBlogdata = req?.body;
     const fieldsToSave = {
-        title: updateBlogdata.title,
-        content: updateBlogdata.content,
-        user_id: updateBlogdata.user,
-        category_id: updateBlogdata.category
+        title: updateBlogdata?.title,
+        content: updateBlogdata?.content,
+        user_id: updateBlogdata?.user,
+        category_id: updateBlogdata?.category
     }
-
-    if (req.file) {
-        fieldsToSave.avatar = req.file.filename;
+    if (req?.file) {
+        fieldsToSave.avatar = req?.file?.filename;
     }
 
     try {
@@ -78,6 +88,7 @@ const updateBlog = async (req, res) => {
         }
         res.send(blog);
     } catch (err) {
+        console.log(err)
         res.status(400).send({ error: err.message });
     }
 }
@@ -86,7 +97,7 @@ const deleteBlog = async (req, res) => {
     try {
         const selectedBlog = await Blog.findById(req.params._id);
         const userRole = req.params.role;
-        
+
         if (userRole === 'author' || userRole === 'user') {
             return res.status(401).send({ message: "You are not authorized to delete blog" });
         }
@@ -114,4 +125,4 @@ const deleteBlog = async (req, res) => {
     }
 }
 
-module.exports = { getBlog, getSelectBlog, createBlog, updateBlog, deleteBlog }
+module.exports = { getBlog, getBlogForAuthor, getSelectBlog, createBlog, updateBlog, deleteBlog }
