@@ -12,7 +12,7 @@ const storage = AvatarStorage({
 
 const limits = {
     files: 1, // allow only 1 file per request
-    fileSize: 1024 * 1024, // 1 MB (max file size)
+    fileSize:  3072 * 3072, // 3 MB (max file size)
 };
 
 const fileFilter = function (req, file, cb) {

@@ -53,11 +53,11 @@ const deleteCategory = async (req, res) => {
     try {
         const blogCount = await Blog.countDocuments({ category_id: req.params._id })
         if (blogCount > 0) {
-            return res.status(400).json({ error: 'Cannot delete category as it is associated with one or more blogs.' });
+            return res.status(400).json({ message: 'Category can not be delete as it is associated with one or more blogs.' });
         } else {
             const category = await Category.findByIdAndDelete(req.params._id);
             if (!category) {
-                return res.status(404).send({ error: 'Category not found' });
+                return res.status(404).send({ message: 'Category not found' });
             }
             res.send({ message: 'Category deleted' });
         }
