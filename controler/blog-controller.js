@@ -24,7 +24,7 @@ const getBlogForAuthor = async (req, res) => {
 }
 const getSelectBlog = async (req, res) => {
     try {
-        const selectedBlog = await Blog.findById(req.params._id).populate("user_id")
+        const selectedBlog = await Blog.findById(req.params._id).populate("user_id").populate("category_id")
         res.send(selectedBlog)
     } catch (err) {
         res.status(400).send({ error: err.message });

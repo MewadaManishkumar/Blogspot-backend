@@ -18,7 +18,7 @@ const { getAdmin, getSelectAdmin, createAdmin, updateAdmin, deleteAdmin } = requ
 const { getAuthor, getSelectAuthor, createAuthor, updateAuthor, deleteAuthor } = require("../controler/author-controller")
 const { getBlog, createBlog, updateBlog, deleteBlog, getSelectBlog, getBlogForAuthor } = require('../controler/blog-controller')
 const { getCategory, getSelectCategory, createCategory, updateCategory, deleteCategory } = require('../controler/category-controller')
-const { loginUser, logoutUser } = require('../controler/login-controller');
+const { loginUser, endUserLogin, logoutUser } = require('../controler/login-controller');
 const { createNewToken } = require('../controler/jwt-controller');
 
 //Admin API
@@ -57,10 +57,13 @@ router.post("/blogs/create",upload.single('avatar'),createBlog);
 router.put("/blogs/update/:_id",upload.single('avatar'), updateBlog);
 router.delete("/blogs/delete/:_id/:role",deleteBlog);
 
-//Login API
+//Login API for admin panel
 router.post("/login", loginUser);
-router.post('/logout', logoutUser);
 
+//login API for normal User
+router.post("/endUser/login",endUserLogin)
+
+router.post('/logout', logoutUser);
 router.post('/token', createNewToken);
 
 module.exports = router;
