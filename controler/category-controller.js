@@ -21,31 +21,40 @@ const getSelectCategory = async (req, res) => {
 
 const createCategory = async (req, res) => {
     const categoryData = req.body;
-    const fielsToSave = {
-        name: categoryData.category
-    }
-    const category = new Category(fielsToSave);
-    try {
-        await category.save();
-        res.send(category);
-    } catch (err) {
-        res.status(400).send({ error: err.message });
+    if (!categoryData.category || categoryData.category.trim().length === 0) {
+        res.status(403).send({ message: 'Category field is required!' });
+    } else {
+        const toPascalCase = categoryData.category.replace(/\w\S*/g, name => name.charAt(0).toUpperCase() + name.substr(1).toLowerCase());
+        const fielsToSave = {
+            name: toPascalCase
+        }
+        try {
+            const category = new Category(fielsToSave);
+            await category.save();
+            res.send(category);
+        } catch (err) {
+            res.status(400).send({ message: "This category is already exist!" });
+        }
     }
 }
 
 const updateCategory = async (req, res) => {
     const updateCategoryData = req.body;
-    const fielsToSave = {
-        name: updateCategoryData.category
-    }
-    try {
-        const category = await Category.findByIdAndUpdate(req.params._id, { $set: fielsToSave });
-        if (!category) {
-            return res.status(404).send({ error: 'Category not found' });
+    if (!updateCategoryData.category || updateCategoryData.category.trim().length === 0) {
+        res.status(403).send({ message: 'Category field is required!' });
+    } else {
+        const fielsToSave = {
+            name: updateCategoryData.category
         }
-        res.send(category);
-    } catch (err) {
-        res.status(400).send({ error: err.message });
+        try {
+            const category = await Category.findByIdAndUpdate(req.params._id, { $set: fielsToSave });
+            if (!category) {
+                return res.status(404).send({ error: 'Category not found' });
+            }
+            res.send(category);
+        } catch (err) {
+            res.status(400).send({ error: err.message });
+        }
     }
 }
 

@@ -5,12 +5,15 @@ const router = express.Router();
 const _ = require('lodash');
 const path = require('path');
 const multer = require('multer');
+const csv = require("csvtojson");
 const dotenv = require('dotenv');
 
 dotenv.config();
 
 //helpers
 const upload = require('../helpers/UploadLimits')
+// let storage = multer.memoryStorage();
+
 
 //Controllers
 const { getUsers, getSelectUser, createUsers, updateUsers, deleteUsers } = require("../controler/uesrs-controller")
@@ -20,6 +23,10 @@ const { getBlog, createBlog, updateBlog, deleteBlog, getSelectBlog, getBlogForAu
 const { getCategory, getSelectCategory, createCategory, updateCategory, deleteCategory } = require('../controler/category-controller')
 const { loginUser, endUserLogin, logoutUser } = require('../controler/login-controller');
 const { createNewToken } = require('../controler/jwt-controller');
+const { uploadCsv } = require('../controler/csvUpload-controller');
+const { uploadCsvFile } = require('../helpers/CsvStorage');
+const { categoryuploadCsv } = require('../controler/categoryCsv-controller');
+const { bloguploadCsv } = require('../controler/blogCsv-controller');
 
 //Admin API
 router.get("/admins/list", getAdmin);
@@ -53,17 +60,21 @@ router.delete("/categories/delete/:_id", deleteCategory);
 router.get("/blogs/list", getBlog);
 router.get("/blogs/author/:user_id", getBlogForAuthor);
 router.get("/blogs/list/:_id", getSelectBlog);
-router.post("/blogs/create",upload.single('avatar'),createBlog);
-router.put("/blogs/update/:_id",upload.single('avatar'), updateBlog);
-router.delete("/blogs/delete/:_id/:role",deleteBlog);
+router.post("/blogs/create", upload.single('avatar'), createBlog);
+router.put("/blogs/update/:_id", upload.single('avatar'), updateBlog);
+router.delete("/blogs/delete/:_id/:role", deleteBlog);
 
 //Login API for admin panel
 router.post("/login", loginUser);
 
 //login API for normal User
-router.post("/endUser/login",endUserLogin)
+router.post("/endUser/login", endUserLogin)
 
 router.post('/logout', logoutUser);
 router.post('/token', createNewToken);
+
+router.post('/csvUpload/:role', uploadCsvFile.single('csvfile'), uploadCsv)
+router.post('/categorycsv', uploadCsvFile.single('csvfile'), categoryuploadCsv)
+router.post('/blogcsv', uploadCsvFile.single('csvfile'), bloguploadCsv)
 
 module.exports = router;
