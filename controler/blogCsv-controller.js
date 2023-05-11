@@ -9,6 +9,7 @@ const bloguploadCsv = async (req, res) => {
   try {
     let dataParsed = await parseCSV(req.file.filename);
     let parsingArr = [];
+    let categoryData = await Category.find({})
     for (let i = 0; i < dataParsed.length; i++) {
       let arrData = dataParsed[i];
       let dataToSave = {
@@ -17,29 +18,51 @@ const bloguploadCsv = async (req, res) => {
         user_id: arrData.user,
         category_id: arrData.category
       };
+
       try {
         if (!dataToSave.title || !dataToSave.content || !dataToSave.user_id || !dataToSave.category_id) {
           dataToSave.err_msg = 'One or more field is blank';
           dataToSave.is_error = true;
-          parsingArr.push(dataToSave);
+          dataToSave.userName = dataToSave.user_id
+          dataToSave.categoryName = dataToSave.category_id.split("|")
         } else {
-          let userData = await User.findOne({ email: dataToSave.user_id, role: "author" })
-          if (!userData) {
-            dataToSave.err_msg = 'Author is not Found';
+          let emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+          if (!emailValidate.test(dataToSave.user_id)) {
+            dataToSave.err_msg = 'Email format is invalid!';
             dataToSave.is_error = true;
+            dataToSave.userName = dataToSave.user_id
+            dataToSave.categoryName = dataToSave.category_id.replace("|", ",")
             parsingArr.push(dataToSave);
-          } else {
-            dataToSave.user_id = userData._id;
-            let category = await Category.findOne({ name: dataToSave.category_id })
-            if (!category) {
-              dataToSave.err_msg = 'Category is not Found';
+          }
+          else {
+            let userData = await User.findOne({ email: dataToSave.user_id, role: "author" })
+            if (!userData) {
+              dataToSave.err_msg = 'Author is not Found';
               dataToSave.is_error = true;
+              dataToSave.userName = dataToSave.user_id
+              dataToSave.categoryName = dataToSave.category_id.replace("|", ",")
               parsingArr.push(dataToSave);
             } else {
-              dataToSave.category_id = category._id;
-              Blog.create(dataToSave)
+              dataToSave.user_id = userData._id;
+              dataToSave.userName = userData.email
+
+              let categoryArr = dataToSave.category_id.split('|')
+              let categoryPascal = categoryArr.map((category) => category.replace(/\w\S*/g, name => name.charAt(0).toUpperCase() + name.substr(1).toLowerCase()))
+
+              let categories = categoryData.filter(category => categoryPascal.includes(category.name));
+              if (categories.length !== categoryPascal.length) {
+                const missingCategories = categoryPascal.filter(name => !categories.some(category => category.name === name));
+                for (const name of missingCategories) {
+                  let newCategory = await Category.create({ name })
+                  categories.push(newCategory)
+                  categoryData.push(newCategory)
+                }
+              }
+              dataToSave.category_id = categories.map(category => category._id);
+              Blog.create(dataToSave);
               dataToSave.err_msg = '';
               dataToSave.is_error = false;
+              dataToSave.categoryName = categories.map(category => category.name).join(",")
               parsingArr.push(dataToSave);
             }
           }
@@ -84,60 +107,3 @@ function parseCSV(CSV) {
 }
 
 module.exports = { bloguploadCsv };
-
-// let categoryIds = [];
-          // let categories = dataToSave.category_id.split(",");
-          // for (let j = 0; j < categories.length; j++) {
-          //   let category = await Category.findOne({ name: categories[j] });
-          //   if (category) {
-          //     categoryIds.push(category._id);
-          //   } else {
-          //     dataToSave.err_msg = `Category ${categories[j]} not found in database`;
-          //     dataToSave.is_error = true;
-          //     parsingArr.push(dataToSave);
-          //   }
-          // }
-
-// let categoryIds = [];
-//         if (dataToSave.category_id) {
-//           let categories = dataToSave.category_id.split(",");
-//           for (let j = 0; j < categories.length; j++) {
-//             let category = await Category.findOne({ name: categories[j] });
-//             if (category) {
-//               categoryIds.push(category._id);
-//             } else {
-//               dataToSave.err_msg = `Category ${categories[j]} not found in database`;
-//               dataToSave.is_error = true;
-//               parsingArr.push(dataToSave);
-//             }
-//           }
-//         } else {
-//           arrData.err_msg = "No category provided";
-//           arrData.is_error = true;
-//           parsingArr.push(dataToSave);
-//         }
-
-//       let userData = await User.findOne({ _id: dataToSave.user_id });
-//       if (!userData) {
-//         dataToSave.err_msg = `Author not found in database`;
-//         dataToSave.is_error = true;
-//         parsingArr.push(dataToSave);
-//       } else {
-//         dataToSave.user_id = userData._id
-//         try {
-//           if (!dataToSave.title || !dataToSave.content) {
-//             dataToSave.err_msg = "Title or Content is blank";
-//             dataToSave.is_error = true;
-//             parsingArr.push(dataToSave);
-//           } else {
-//             Blog.create(dataToSave)
-//             dataToSave.err_msg = "";
-//             dataToSave.is_error = false;
-//             parsingArr.push(dataToSave);
-//           }
-//         } catch (err) {
-//           dataToSave.err_msg = "Something went wrong!!";
-//           dataToSave.is_error = false;
-//           parsingArr.push(dataToSave);
-//         }
-//       }
