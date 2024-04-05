@@ -1,16 +1,15 @@
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const main = async()=> {
     try{
-        await mongoose.connect('mongodb://localhost:27017/Blog-app',{
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-          });
-        console.log("Database Connetecd Suucessfully");
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log("Database Connected Successfully");
     }
     catch(error){
         console.log("Error while connecting with database", error);
     }
 }
-main();
 
+main();
